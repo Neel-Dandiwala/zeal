@@ -1,26 +1,42 @@
 <template>
   <section id="integrations" class="integrations section">
     <div class="container">
-      <div class="text-center">
-        <h2 class="integrations__title">Seamless Integrations</h2>
-        <p class="integrations__subtitle">
-          Drop‑in enrichment and brief generation on top of your existing stack
-        </p>
-      </div>
-      
-      <div class="integrations__logos">
-        <div class="logo-grid">
-          <div class="logo-item" v-for="integration in integrations" :key="integration.name">
-            <div class="logo-placeholder" :class="`logo-${integration.slug}`">
-              <span class="logo-text">{{ integration.name }}</span>
+      <div class="integrations__hero">
+        <div class="integrations__content">
+          <h2 class="integrations__title">Seamless Integrations</h2>
+          <p class="integrations__subtitle">
+            Drop‑in enrichment and brief generation on top of your existing stack
+          </p>
+          
+          <!-- Auto-cycling logos strip -->
+          <div class="integrations__logos-strip">
+            <div class="logos-carousel">
+              <div 
+                v-for="integration in integrations" 
+                :key="integration.name"
+                class="logo-badge"
+                :class="`logo-${integration.slug}`"
+              >
+                <span class="logo-text">{{ integration.name }}</span>
+              </div>
             </div>
           </div>
           
-          <div class="logo-item logo-item--more">
-            <div class="logo-placeholder logo-more">
-              <span class="logo-text">+ 12 more</span>
-            </div>
+          <div class="integrations__cta">
+            <button class="btn btn-primary" @click="scrollToIntegrationsList">
+              See it work with your tools
+            </button>
           </div>
+        </div>
+        
+        <div class="integrations__diagram">
+          <IntegrationDiagram
+            :center="diagramCenter"
+            :inbound="diagramInbound"
+            :outbound="diagramOutbound"
+            :packet-speed="240"
+            :loop-delay-ms="400"
+          />
         </div>
       </div>
       
@@ -75,6 +91,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import IntegrationDiagram from './IntegrationDiagram.vue'
 
 const integrations = ref([
   { name: 'Salesforce', slug: 'salesforce' },
@@ -84,27 +101,196 @@ const integrations = ref([
   { name: 'Outreach', slug: 'outreach' },
   { name: 'SalesLoft', slug: 'salesloft' }
 ])
+
+// Diagram configuration
+const diagramCenter = ref({
+  id: 'zeal',
+  label: 'Zeal',
+  type: 'core',
+  brandColor: '#2EF2E8',
+  logo: { kind: 'mono', text: 'Z' }
+})
+
+const diagramInbound = ref([
+  {
+    id: 'hubspot',
+    label: 'HubSpot',
+    type: 'inbound',
+    brandColor: '#FF7A59',
+    logo: { kind: 'simpleIcon', slug: 'hubspot' }
+  },
+  {
+    id: 'salesforce',
+    label: 'Salesforce',
+    type: 'inbound',
+    brandColor: '#00A1E0',
+    logo: { kind: 'simpleIcon', slug: 'salesforce' }
+  },
+  {
+    id: 'apollo',
+    label: 'Apollo',
+    type: 'inbound',
+    brandColor: '#6C5CE7',
+    logo: { kind: 'mono', text: 'Ap' }
+  },
+  {
+    id: 'clay',
+    label: 'Clay',
+    type: 'inbound',
+    brandColor: '#00B894',
+    logo: { kind: 'mono', text: 'Cl' }
+  },
+  {
+    id: 'google',
+    label: 'Google Search',
+    type: 'inbound',
+    brandColor: '#4285F4',
+    logo: { kind: 'simpleIcon', slug: 'google' }
+  },
+  {
+    id: 'bing',
+    label: 'Bing',
+    type: 'inbound',
+    brandColor: '#0078D4',
+    logo: { kind: 'simpleIcon', slug: 'bing' }
+  }
+])
+
+const diagramOutbound = ref([
+  {
+    id: 'gmail',
+    label: 'Gmail',
+    type: 'outbound',
+    brandColor: '#EA4335',
+    logo: { kind: 'simpleIcon', slug: 'gmail' }
+  },
+  {
+    id: 'slack',
+    label: 'Slack',
+    type: 'outbound',
+    brandColor: '#4A154B',
+    logo: { kind: 'simpleIcon', slug: 'slack' }
+  },
+  {
+    id: 'discord',
+    label: 'Discord',
+    type: 'outbound',
+    brandColor: '#5865F2',
+    logo: { kind: 'simpleIcon', slug: 'discord' }
+  },
+  {
+    id: 'whatsapp',
+    label: 'WhatsApp',
+    type: 'outbound',
+    brandColor: '#25D366',
+    logo: { kind: 'simpleIcon', slug: 'whatsapp' }
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    type: 'outbound',
+    brandColor: '#0A66C2',
+    logo: { kind: 'simpleIcon', slug: 'linkedin' }
+  },
+  {
+    id: 'web',
+    label: 'Web',
+    type: 'outbound',
+    brandColor: '#6B7280',
+    logo: { kind: 'simpleIcon', slug: 'globe' }
+  }
+])
+
+const scrollToIntegrationsList = () => {
+  const featuresSection = document.querySelector('.integrations__features')
+  if (featuresSection) {
+    featuresSection.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 </script>
 
-<style scoped>
+  <style scoped>
 .integrations {
   background: linear-gradient(135deg, rgba(122, 162, 255, 0.05), rgba(91, 215, 194, 0.05));
 }
 
+.integrations__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 6rem;
+}
+
+.integrations__content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .integrations__title {
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
 }
 
 .integrations__subtitle {
-  font-size: 1.125rem;
-  margin-bottom: 4rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 1.25rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+  line-height: 1.6;
 }
 
-.integrations__logos {
-  margin-bottom: 4rem;
+.integrations__logos-strip {
+  margin-bottom: 2rem;
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+.logos-carousel {
+  display: flex;
+  gap: 1rem;
+  animation: logoScroll 20s linear infinite;
+}
+
+.logo-badge {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  background: var(--panel);
+  border: 1px solid rgba(166, 176, 187, 0.1);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  color: var(--text);
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.logo-badge:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.integrations__cta {
+  margin-top: 2rem;
+}
+
+.integrations__diagram {
+  position: relative;
+  width: 100%;
+  background: rgba(11, 13, 16, 0.3);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(166, 176, 187, 0.08);
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes logoScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .logo-grid {
@@ -261,6 +447,26 @@ const integrations = ref([
 }
 
 @media (max-width: 768px) {
+  .integrations__hero {
+    gap: 2rem;
+  }
+  
+  .integrations__title {
+    font-size: 2rem;
+  }
+  
+  .integrations__subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .integrations__diagram {
+    padding: 1rem;
+  }
+  
+  .logos-carousel {
+    animation-duration: 15s;
+  }
+  
   .logo-grid {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1.5rem;
@@ -273,6 +479,20 @@ const integrations = ref([
   
   .logo-text {
     font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logos-carousel {
+    animation: none;
+  }
+  
+  .logo-badge {
+    transition: none;
+  }
+  
+  .logo-badge:hover {
+    transform: none;
   }
 }
 
