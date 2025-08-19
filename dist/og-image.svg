@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0b0d10;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#111418;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5bd7c2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7aa2ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="100" y="200" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="url(#accent)">Zeal</text>
+  <text x="100" y="280" font-family="Arial, sans-serif" font-size="36" fill="#e8eef2">Real-Time Global People Intelligence</text>
+  <text x="100" y="330" font-family="Arial, sans-serif" font-size="24" fill="#a6b0bb">Personality-driven outreach for sales teams</text>
+  <rect x="100" y="400" width="300" height="150" rx="12" fill="#111418" stroke="#5bd7c2" stroke-width="2"/>
+  <text x="250" y="440" font-family="Arial, sans-serif" font-size="16" fill="#e8eef2" text-anchor="middle">Personality Palette</text>
+  <circle cx="150" cy="490" r="20" fill="#64a1ff"/>
+  <circle cx="200" cy="490" r="20" fill="#a5ffda"/>
+  <circle cx="250" cy="490" r="20" fill="#ffd166"/>
+  <circle cx="300" cy="490" r="20" fill="#ff9b9b"/>
+  <circle cx="350" cy="490" r="20" fill="#b19cff"/>
+  <text x="150" y="525" font-family="Arial, sans-serif" font-size="10" fill="#a6b0bb" text-anchor="middle">Analytical</text>
+  <text x="200" y="525" font-family="Arial, sans-serif" font-size="10" fill="#a6b0bb" text-anchor="middle">Direct</text>
+  <text x="250" y="525" font-family="Arial, sans-serif" font-size="10" fill="#a6b0bb" text-anchor="middle">Vision-led</text>
+  <text x="300" y="525" font-family="Arial, sans-serif" font-size="10" fill="#a6b0bb" text-anchor="middle">Risk-averse</text>
+  <text x="350" y="525" font-family="Arial, sans-serif" font-size="10" fill="#a6b0bb" text-anchor="middle">Detail-oriented</text>
+</svg>
