@@ -21,7 +21,7 @@
         </div>
         
         <div class="hero__visual">
-          <PersonalityPalette :persona="persona" :compact="false" />
+          <PersonalityPaletteFluid :persona="persona" :compact="false" />
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import PersonalityPalette from './PersonalityPalette.vue'
+import PersonalityPaletteFluid from './PersonalityPaletteFluid.vue'
 
 defineProps({
   persona: {

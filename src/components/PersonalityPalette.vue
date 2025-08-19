@@ -1,5 +1,5 @@
 <template>
-  <div class="palette">
+  <figure class="palette" :class="{ 'palette--compact': compact }">
     <div v-if="!compact" class="palette__header">
       <h3 class="palette__title">Personality Palette</h3>
       <div class="palette__controls">
@@ -7,7 +7,7 @@
           class="palette__toggle"
           :class="{ 'palette__toggle--active': viewMode === 'big5' }"
           @click="viewMode = 'big5'"
-          aria-pressed="viewMode === 'big5'"
+          :aria-pressed="viewMode === 'big5'"
         >
           Big Five
         </button>
@@ -15,66 +15,149 @@
           class="palette__toggle"
           :class="{ 'palette__toggle--active': viewMode === 'sales' }"
           @click="viewMode = 'sales'"
-          aria-pressed="viewMode === 'sales'"
+          :aria-pressed="viewMode === 'sales'"
         >
           Sales Traits
         </button>
       </div>
     </div>
     
-    <div class="palette__grid" @keydown="handleKeydown" tabindex="0" role="grid" aria-label="Personality traits">
-      <div
-        v-for="(trait, index) in sortedTraits"
+    <div class="palette__canvas-container">
+      <canvas 
+        ref="glCanvas"
+        class="palette__canvas"
+        :width="canvasSize"
+        :height="canvasSize"
+        role="img"
+        :aria-label="ariaLabel"
+        @mousemove="onMouseMove"
+        @mouseleave="onMouseLeave"
+        @click="onCanvasClick"
+        @keydown="onKeyDown"
+        tabindex="0"
+      ></canvas>
+      
+      <!-- Hidden focusable trait markers for keyboard navigation -->
+      <button
+        v-for="(trait, index) in processedTraits"
         :key="trait.name"
-        class="palette__tile"
-        :style="{ backgroundColor: trait.color }"
-        :tabindex="focusedIndex === index ? 0 : -1"
-        role="gridcell"
+        class="palette__trait-marker visually-hidden"
+        :style="getMarkerStyle(trait, index)"
+        :tabindex="focusedTraitIndex === index ? 0 : -1"
+        @focus="onTraitFocus(index)"
+        @click="onTraitClick(index)"
         :aria-label="`${trait.name}: ${Math.round(trait.score * 100)}%`"
-        @mouseenter="showTooltip(index)"
-        @mouseleave="hideTooltip"
-        @focus="showTooltip(index)"
-        @blur="hideTooltip"
       >
-        <div class="palette__tile-content">
-          <div class="palette__tile-name">{{ trait.name }}</div>
-          <div class="palette__tile-score">{{ Math.round(trait.score * 100) }}%</div>
-        </div>
-        
-        <div 
-          v-if="tooltipIndex === index && tooltip.visible"
-          class="palette__tooltip"
-          role="tooltip"
-          :aria-describedby="`tooltip-${index}`"
-        >
-          <div class="palette__tooltip-score">
-            {{ Math.round(trait.score * 100) }}% {{ trait.name }}
-          </div>
-          <div class="palette__tooltip-interpretation">
-            {{ getInterpretation(trait) }}
-          </div>
-          <div class="palette__tooltip-source">
-            {{ getRecentSource(trait) }}
-          </div>
-        </div>
-      </div>
+        {{ trait.name }}
+      </button>
     </div>
     
-    <div v-if="!compact" class="palette__legend">
-      <p class="palette__legend-text">
-        Colors represent trait intensity. Hover or focus on tiles for detailed insights and recent signals.
-      </p>
+    <figcaption v-if="!compact">
+      <ul class="palette__legend" role="list">
+        <li v-for="(trait, index) in processedTraits" :key="trait.name" class="legend__item">
+          <button 
+            class="legend__button"
+            @click="onLegendClick(index)"
+            :aria-label="`Highlight ${trait.name} trait: ${Math.round(trait.score * 100)}%`"
+          >
+            <span 
+              class="legend__color" 
+              :style="{ backgroundColor: trait.color }"
+              :aria-hidden="true"
+            ></span>
+            <span class="legend__name">{{ trait.name }}</span>
+            <span class="legend__score">{{ Math.round(trait.score * 100) }}%</span>
+          </button>
+        </li>
+      </ul>
+    </figcaption>
+    
+    <!-- Tooltip -->
+    <div 
+      v-if="tooltip.visible"
+      class="palette__tooltip"
+      role="dialog"
+      aria-live="polite"
+      :style="tooltipStyle"
+    >
+      <div class="tooltip__header">
+        <span class="tooltip__name">{{ tooltip.trait?.name }}</span>
+        <span class="tooltip__score">{{ Math.round((tooltip.trait?.score || 0) * 100) }}%</span>
+      </div>
+      <div class="tooltip__bar">
+        <div 
+          class="tooltip__bar-fill" 
+          :style="{ 
+            width: `${(tooltip.trait?.score || 0) * 100}%`,
+            backgroundColor: tooltip.trait?.color 
+          }"
+        ></div>
+      </div>
+      <div v-if="tooltip.trait?.source" class="tooltip__source">
+        Last signal: {{ tooltip.trait.source }}
+      </div>
+      <button 
+        class="tooltip__close"
+        @click="hideTooltip"
+        aria-label="Close tooltip"
+      >
+        ×
+      </button>
     </div>
-  </div>
+  </figure>
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+
+// Configuration object for tunable parameters
+const CONFIG = {
+  // Spatial layout
+  baseRadius: 0.55,          // Centroid radius as fraction of canvas radius
+  sigmaMin: 0.12,            // Minimum RBF sigma as fraction of radius
+  sigmaMax: 0.4,             // Maximum RBF sigma as fraction of radius
+  sigmaRange: 0.22,          // Range for sigma calculation
+  sigmaBase: 0.18,           // Base sigma offset
+  
+  // Color mixing
+  temperature: 0.9,          // Softmax temperature
+  
+  // Animation
+  noiseFreq: 0.08,          // Noise frequency for animation
+  advectionAlpha: 0.02,     // Advection strength for sampling coords
+  tetherBeta: 0.015,        // Tethering strength for centroids
+  animSpeed: 0.1,           // Animation speed multiplier
+  
+  // Performance
+  maxPixelRatio: 1.5,       // Cap pixel ratio for performance
+  fallbackFPS: 25,          // Canvas 2D fallback FPS
+  
+  // Interaction
+  pulseStrength: 0.1,       // Legend click pulse strength
+  pulseDuration: 400,       // Pulse duration in ms
+}
 
 const props = defineProps({
+  traits: {
+    type: Array,
+    default: () => []
+  },
+  seed: {
+    type: Number,
+    default: 42
+  },
+  animate: {
+    type: Boolean,
+    default: true
+  },
+  diameter: {
+    type: Number,
+    default: 520
+  },
+  // Legacy props for backward compatibility
   persona: {
     type: Object,
-    required: true
+    default: null
   },
   compact: {
     type: Boolean,
@@ -82,14 +165,63 @@ const props = defineProps({
   }
 })
 
-const viewMode = ref('sales')
-const tooltipIndex = ref(-1)
-const focusedIndex = ref(0)
-const tooltip = ref({ visible: false })
+const emit = defineEmits(['trait-hover', 'trait-lock'])
 
-const sortedTraits = computed(() => {
-  return [...props.persona.traits].sort((a, b) => b.score - a.score)
+// Reactive refs
+const glCanvas = ref(null)
+const viewMode = ref('sales')
+const focusedTraitIndex = ref(0)
+const tooltip = ref({
+  visible: false,
+  trait: null,
+  x: 0,
+  y: 0,
+  locked: false
 })
+
+// WebGL/Canvas state
+let gl = null
+let program = null
+let uniforms = {}
+let rafId = null
+let resizeObserver = null
+let intersectionObserver = null
+let isVisible = true
+let prefersReducedMotion = false
+let useWebGL = false
+let canvas2DContext = null
+let lastRenderTime = 0
+
+// Processed traits from props or legacy persona
+const processedTraits = computed(() => {
+  if (props.traits && props.traits.length > 0) {
+    return [...props.traits].sort((a, b) => b.score - a.score)
+  }
+  
+  if (props.persona && props.persona.traits) {
+    return [...props.persona.traits].sort((a, b) => b.score - a.score)
+  }
+  
+  return []
+})
+
+// Canvas size with device pixel ratio
+const canvasSize = computed(() => {
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, CONFIG.maxPixelRatio)
+  return Math.floor(props.diameter * pixelRatio)
+})
+
+// Accessibility label
+const ariaLabel = computed(() => {
+  const traitNames = processedTraits.value.map(t => t.name).join(', ')
+  return `Personality palette visualization showing blended traits: ${traitNames}`
+})
+
+// Tooltip positioning
+const tooltipStyle = computed(() => ({
+  transform: `translate(${tooltip.value.x}px, ${tooltip.value.y}px)`,
+  pointerEvents: tooltip.value.locked ? 'auto' : 'none'
+}))
 
 const interpretations = {
   'Analytical': {
