@@ -20,22 +20,59 @@
           </p>
         </div>
         
-        <div class="hero__visual">
-          <PersonalityPaletteFluid :persona="persona" :compact="false" />
-        </div>
+            <div class="hero__visual">
+      <PersonalityPaletteNebula 
+        :traits="processedTraits" 
+        :size="520"
+        :animate="true"
+      />
+    </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import PersonalityPaletteFluid from './PersonalityPaletteFluid.vue'
+import { computed } from 'vue'
+import PersonalityPaletteNebula from './PersonalityPaletteNebula.vue'
 
-defineProps({
+const props = defineProps({
   persona: {
     type: Object,
     required: true
   }
+})
+
+// Transform persona traits to match the nebula component's expected format
+const processedTraits = computed(() => {
+  const traits = props.persona.traits || []
+  
+  // Map traits to the five personality dimensions with brand colors
+  const traitMap = {
+    mind: { color: '#F24D2E', weight: 0.84 },      // Orange-red - Mind/Analytical
+    energy: { color: '#6A73FF', weight: 0.78 },    // Periwinkle - Energy/Direct  
+    nature: { color: '#0E57FF', weight: 0.66 },    // Royal blue - Nature/Vision-led
+    tactics: { color: '#FFED69', weight: 0.41 },   // Yellow - Tactics/Risk-averse
+    identity: { color: '#E53378', weight: 0.72 }   // Cerise - Identity/Detail-oriented
+  }
+  
+  // Use actual trait data if available, otherwise use defaults
+  if (traits.length >= 5) {
+    traitMap.mind.weight = traits[0]?.score || 0.84
+    traitMap.energy.weight = traits[1]?.score || 0.78  
+    traitMap.nature.weight = traits[2]?.score || 0.66
+    traitMap.tactics.weight = traits[3]?.score || 0.41
+    traitMap.identity.weight = traits[4]?.score || 0.72
+    
+    // Use trait colors if provided
+    if (traits[0]?.color) traitMap.mind.color = traits[0].color
+    if (traits[1]?.color) traitMap.energy.color = traits[1].color
+    if (traits[2]?.color) traitMap.nature.color = traits[2].color
+    if (traits[3]?.color) traitMap.tactics.color = traits[3].color
+    if (traits[4]?.color) traitMap.identity.color = traits[4].color
+  }
+  
+  return traitMap
 })
 </script>
 
