@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  // IMPORTANT: use your repo name here (keep the trailing slash)
+  // Site is deployed at neeldandiwala.com/zeal/ so we need the subpath
   base: '/zeal/',
   build: {
     rollupOptions: {
