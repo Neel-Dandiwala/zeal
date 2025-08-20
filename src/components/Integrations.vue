@@ -211,7 +211,7 @@ const scrollToIntegrationsList = () => {
 
   <style scoped>
 .integrations {
-  background: linear-gradient(135deg, rgba(122, 162, 255, 0.05), rgba(91, 215, 194, 0.05));
+  background: var(--bg);
 }
 
 .integrations__hero {
@@ -256,7 +256,7 @@ const scrollToIntegrationsList = () => {
 .logo-badge {
   flex-shrink: 0;
   padding: 0.5rem 1rem;
-  background: var(--panel);
+  background: transparent;
   border: 1px solid rgba(166, 176, 187, 0.1);
   border-radius: var(--border-radius);
   font-size: 0.875rem;
@@ -277,7 +277,7 @@ const scrollToIntegrationsList = () => {
 .integrations__diagram {
   position: relative;
   width: 100%;
-  background: rgba(11, 13, 16, 0.3);
+  background: transparent;
   border-radius: var(--border-radius-lg);
   border: 1px solid rgba(166, 176, 187, 0.08);
   padding: 2rem;
@@ -310,7 +310,7 @@ const scrollToIntegrationsList = () => {
 .logo-placeholder {
   width: 160px;
   height: 80px;
-  background: var(--panel);
+  background: transparent;
   border: 2px solid rgba(166, 176, 187, 0.1);
   border-radius: var(--border-radius);
   display: flex;
@@ -405,7 +405,7 @@ const scrollToIntegrationsList = () => {
 .feature__icon {
   width: 64px;
   height: 64px;
-  background: var(--panel);
+  background: transparent;
   border: 1px solid rgba(166, 176, 187, 0.1);
   border-radius: 50%;
   display: flex;

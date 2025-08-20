@@ -131,10 +131,6 @@ const features = ref([
 </script>
 
 <style scoped>
-.features {
-  background: var(--bg);
-}
-
 .features__title {
   margin-bottom: 1rem;
 }
@@ -154,11 +150,12 @@ const features = ref([
 }
 
 .feature-card {
-  background: var(--panel);
-  border-radius: var(--border-radius-lg);
+  background: transparent;
+  border-radius: var(--r-md);
   padding: 2rem;
-  border: 1px solid rgba(166, 176, 187, 0.1);
-  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: transform var(--dur-2) var(--e-out), 
+              border-color var(--dur-1) var(--e-out);
   position: relative;
   overflow: hidden;
 }
@@ -169,16 +166,15 @@ const features = ref([
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  height: 2px;
+  background: var(--accent);
   opacity: 0;
-  transition: var(--transition);
+  transition: opacity var(--dur-1) var(--e-out);
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .feature-card:hover::before {

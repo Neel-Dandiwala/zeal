@@ -143,9 +143,9 @@ const toggleItem = (index) => {
 }
 
 .faq-item {
-  background: var(--panel);
+  background: transparent;
   border-radius: var(--border-radius);
-  border: 1px solid rgba(166, 176, 187, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   margin-bottom: 1rem;
   overflow: hidden;
   transition: var(--transition);

@@ -331,7 +331,7 @@ onMounted(() => {
 
 <style scoped>
 .demo {
-  background: var(--panel);
+  background: transparent;
 }
 
 .demo__title {
@@ -422,7 +422,7 @@ onMounted(() => {
 
 .signal-item {
   padding: 1rem;
-  background: var(--panel);
+  background: transparent;
   border-radius: var(--border-radius);
   border: 1px solid rgba(166, 176, 187, 0.1);
 }
@@ -511,7 +511,7 @@ onMounted(() => {
 .composer__tone-select {
   padding: 0.5rem;
   border: 1px solid var(--muted);
-  background: var(--panel);
+  background: transparent;
   color: var(--text);
   border-radius: var(--border-radius);
   font-family: inherit;
@@ -527,7 +527,7 @@ onMounted(() => {
   min-height: 300px;
   padding: 1rem;
   border: 1px solid rgba(166, 176, 187, 0.2);
-  background: var(--panel);
+  background: transparent;
   color: var(--text);
   border-radius: var(--border-radius);
   font-family: var(--font-mono);

@@ -130,7 +130,7 @@ const lastRefreshed = computed(() => {
 
 <style scoped>
 .testimonials {
-  background: var(--panel);
+  background: transparent;
 }
 
 .testimonials__title {

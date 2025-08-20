@@ -380,86 +380,98 @@ const createCurvedPath = (start, end, direction) => {
   }
 }
 
-// Logo components with official company SVG logos
+// Simplified logo components with better rendering
 const SimpleIconLogo = {
   props: ['slug', 'size'],
   template: `
     <g class="company-logo">
-      <circle r="22" fill="white" opacity="0.08"/>
-      <g transform="scale(0.6)">
-        <!-- HubSpot Official Logo -->
-        <g v-if="slug === 'hubspot'" fill="#FF7A59" transform="translate(-12, -12)">
-          <path d="M12 0c6.627 0 12 5.373 12 12s-5.373 12-12 12S0 18.627 0 12 5.373 0 12 0zm0 2.4c-5.302 0-9.6 4.298-9.6 9.6s4.298 9.6 9.6 9.6 9.6-4.298 9.6-9.6S17.302 2.4 12 2.4zm0 3.6c3.314 0 6 2.686 6 6s-2.686 6-6 6-6-2.686-6-6 2.686-6 6-6z"/>
-        </g>
-        
-        <!-- Salesforce Official Logo -->
-        <g v-else-if="slug === 'salesforce'" fill="#00A1E0" transform="translate(-12, -12)">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          <circle cx="12" cy="12" r="8" fill="none" stroke="#00A1E0" stroke-width="1.5"/>
-        </g>
-        
-        <!-- Apollo Logo -->
-        <g v-else-if="slug === 'apollo'" fill="#6C5CE7" transform="translate(-12, -12)">
-          <circle cx="12" cy="8" r="3"/>
-          <path d="M6 16l6-8 6 8H6z"/>
-        </g>
-        
-        <!-- Clay Logo -->
-        <g v-else-if="slug === 'clay'" fill="#00B894" transform="translate(-12, -12)">
-          <rect x="4" y="4" width="16" height="16" rx="4"/>
-          <text x="12" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">C</text>
-        </g>
-        
-        <!-- Google Official Logo -->
-        <g v-else-if="slug === 'google'" transform="translate(-12, -12)">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-        </g>
-        
-        <!-- Bing Official Logo -->
-        <g v-else-if="slug === 'bing'" fill="#0078D4" transform="translate(-12, -12)">
-          <path d="M5.5 3L7 4.5V12l5.5 3.5L18 13V9.5L12.5 7L7 9.5V7L5.5 3z"/>
-        </g>
-        
-        <!-- Gmail Official Logo -->
-        <g v-else-if="slug === 'gmail'" transform="translate(-12, -12)">
-          <path fill="#EA4335" d="M24 5.25v13.5c0 .69-.56 1.25-1.25 1.25H1.25C.56 20 0 19.44 0 18.75V5.25C0 4.56.56 4 1.25 4h21.5C23.44 4 24 4.56 24 5.25z"/>
-          <path fill="#FBBC05" d="M0 7.5L12 15l12-7.5"/>
-          <path fill="#34A853" d="M0 5.25L12 12.75L24 5.25"/>
-        </g>
-        
-        <!-- Slack Official Logo -->
-        <g v-else-if="slug === 'slack'" transform="translate(-12, -12)">
-          <path fill="#E01E5A" d="M8.5 12.5c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5.7-1.5 1.5-1.5h1.5v1.5z"/>
-          <path fill="#36C5F0" d="M10.75 8.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5 1.5.7 1.5 1.5v1.5h-1.5z"/>
-          <path fill="#2EB67D" d="M15.25 10.75c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5-.7 1.5-1.5 1.5h-1.5v-1.5z"/>
-          <path fill="#ECB22E" d="M13 15.25c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5v-1.5H13z"/>
-        </g>
-        
-        <!-- Discord Official Logo -->
-        <g v-else-if="slug === 'discord'" fill="#5865F2" transform="translate(-12, -12)">
-          <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02z"/>
-        </g>
-        
-        <!-- WhatsApp Official Logo -->
-        <g v-else-if="slug === 'whatsapp'" fill="#25D366" transform="translate(-12, -12)">
-          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m.01 1.67c4.62 0 8.24 3.62 8.24 8.24 0 4.62-3.62 8.24-8.24 8.24-1.37 0-2.74-.35-3.96-1.02l-.54-.32-1.54.4.42-1.52-.36-.58c-.66-1.07-1.01-2.3-1.01-3.58 0-4.62 3.62-8.24 8.24-8.24"/>
-        </g>
-        
-        <!-- LinkedIn Official Logo -->
-        <g v-else-if="slug === 'linkedin'" fill="#0A66C2" transform="translate(-12, -12)">
-          <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/>
-        </g>
-        
-        <!-- Globe/Web Icon -->
-        <g v-else-if="slug === 'globe'" fill="#6B7280" transform="translate(-12, -12)">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-        </g>
-        
-        <!-- Fallback Initial Letter -->
-        <text v-else x="0" y="6" text-anchor="middle" dominant-baseline="central" fill="white" font-size="16" font-weight="700" font-family="system-ui">
+      <circle r="20" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      
+      <!-- HubSpot -->
+      <g v-if="slug === 'hubspot'">
+        <circle cx="0" cy="0" r="8" fill="#FF7A59"/>
+        <circle cx="0" cy="0" r="4" fill="white"/>
+      </g>
+
+      <!-- Salesforce -->
+      <g v-else-if="slug === 'salesforce'">
+        <path d="M-6,-3 L0,-8 L6,-3 L3,3 L-3,3 Z" fill="#00A1E0"/>
+        <circle cx="0" cy="0" r="6" fill="none" stroke="#00A1E0" stroke-width="2"/>
+      </g>
+
+      <!-- Apollo -->
+      <g v-else-if="slug === 'apollo'">
+        <path d="M-8,6 L0,-6 L8,6 Z" fill="#6C5CE7"/>
+        <circle cx="0" cy="-2" r="3" fill="#6C5CE7"/>
+      </g>
+
+      <!-- Clay -->
+      <g v-else-if="slug === 'clay'">
+        <rect x="-8" y="-8" width="16" height="16" rx="3" fill="#00B894"/>
+        <text x="0" y="3" text-anchor="middle" fill="white" font-size="12" font-weight="bold">C</text>
+      </g>
+
+      <!-- Google -->
+      <g v-else-if="slug === 'google'">
+        <circle cx="0" cy="0" r="8" fill="#4285F4"/>
+        <path d="M-4,-4 L4,-4 L4,0 L-4,0 Z" fill="#EA4335"/>
+        <path d="M-4,0 L4,0 L4,4 L-4,4 Z" fill="#34A853"/>
+      </g>
+
+      <!-- Bing -->
+      <g v-else-if="slug === 'bing'">
+        <rect x="-6" y="-6" width="12" height="12" fill="#0078D4"/>
+        <text x="0" y="2" text-anchor="middle" fill="white" font-size="10" font-weight="bold">b</text>
+      </g>
+
+      <!-- Gmail -->
+      <g v-else-if="slug === 'gmail'">
+        <rect x="-8" y="-4" width="16" height="8" rx="2" fill="#EA4335"/>
+        <path d="M-8,0 L0,-4 L8,0" fill="none" stroke="white" stroke-width="2"/>
+      </g>
+
+      <!-- Slack -->
+      <g v-else-if="slug === 'slack'">
+        <rect x="-6" y="-2" width="4" height="4" rx="2" fill="#E01E5A"/>
+        <rect x="2" y="-2" width="4" height="4" rx="2" fill="#36C5F0"/>
+        <rect x="-6" y="2" width="4" height="4" rx="2" fill="#2EB67D"/>
+        <rect x="2" y="2" width="4" height="4" rx="2" fill="#ECB22E"/>
+      </g>
+
+      <!-- Discord -->
+      <g v-else-if="slug === 'discord'">
+        <rect x="-8" y="-6" width="16" height="12" rx="4" fill="#5865F2"/>
+        <circle cx="-3" cy="-1" r="1.5" fill="white"/>
+        <circle cx="3" cy="-1" r="1.5" fill="white"/>
+        <path d="M-4,2 Q0,4 4,2" fill="none" stroke="white" stroke-width="2"/>
+      </g>
+
+      <!-- WhatsApp -->
+      <g v-else-if="slug === 'whatsapp'">
+        <circle cx="0" cy="0" r="8" fill="#25D366"/>
+        <path d="M-4,-2 Q0,-4 4,-2 Q4,2 0,4 Q-4,2 -4,-2" fill="white"/>
+      </g>
+
+      <!-- LinkedIn -->
+      <g v-else-if="slug === 'linkedin'">
+        <rect x="-8" y="-8" width="16" height="16" rx="2" fill="#0A66C2"/>
+        <rect x="-5" y="-2" width="2" height="6" fill="white"/>
+        <rect x="-1" y="0" width="2" height="4" fill="white"/>
+        <rect x="3" y="-1" width="2" height="5" fill="white"/>
+        <circle cx="-4" cy="-4" r="1" fill="white"/>
+      </g>
+
+      <!-- Globe/Web -->
+      <g v-else-if="slug === 'globe'">
+        <circle cx="0" cy="0" r="7" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <path d="M-7,0 L7,0 M0,-7 L0,7" stroke="#6B7280" stroke-width="1"/>
+        <ellipse cx="0" cy="0" rx="7" ry="3" fill="none" stroke="#6B7280" stroke-width="1"/>
+      </g>
+
+      <!-- Fallback Initial Letter -->
+      <g v-else>
+        <circle cx="0" cy="0" r="8" fill="rgba(255,255,255,0.1)"/>
+        <text x="0" y="3" text-anchor="middle" fill="white" font-size="10" font-weight="700">
           {{ slug.charAt(0).toUpperCase() }}
         </text>
       </g>

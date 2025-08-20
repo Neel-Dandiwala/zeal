@@ -209,26 +209,22 @@ void main() {
 }
 `
 
-// Fragment shader - Full nebula implementation
+// Fragment shader - Full nebula effect
 const fragmentShader = `
 precision highp float;
 
 varying vec2 vUv;
-
 uniform float uTime;
-uniform vec2 uResolution;
-uniform vec3 uTraitColors[5];
-uniform float uTraitWeights[5];
 uniform float uRadius;
 
-// Hash function for noise
+// Hash function for procedural noise
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 345.45));
   p += dot(p, p + 34.345);
   return fract(p.x * p.y);
 }
 
-// Perlin noise
+// Simple noise function
 float noise(vec2 p) {
   vec2 i = floor(p);
   vec2 f = fract(p);
@@ -240,145 +236,124 @@ float noise(vec2 p) {
   return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
 }
 
-// Fractal Brownian Motion
+// Fractal noise (simplified)
 float fbm(vec2 p) {
-  float v = 0.0;
-  float a = 0.5;
-  for (int i = 0; i < 6; i++) {
-    v += a * noise(p);
-    p *= 2.02;
-    a *= 0.5;
+  float value = 0.0;
+  float amplitude = 0.5;
+  for (int i = 0; i < 4; i++) {
+    value += amplitude * noise(p);
+    p *= 2.0;
+    amplitude *= 0.5;
   }
-  return v;
+  return value;
 }
 
-// Worley noise (cellular)
-float worley(vec2 p) {
-  vec2 i = floor(p);
-  float d = 1.0;
-  for (int y = -1; y <= 1; y++) {
-    for (int x = -1; x <= 1; x++) {
-      vec2 g = vec2(float(x), float(y));
-      vec2 o = hash(i + g + 0.7) * vec2(0.7, 0.7);
-      vec2 r = g + o - fract(p);
-      d = min(d, dot(r, r));
-    }
-  }
-  return sqrt(d);
-}
-
-// HSV conversion
-vec3 rgb2hsv(vec3 c) {
-  vec4 K = vec4(0., -1./3., 2./3., -1.);
-  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
-  float d = q.x - min(q.w, q.y);
-  float e = 1.0e-10;
-  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-}
-
+// HSV color space conversion
 vec3 hsv2rgb(vec3 c) {
-  vec3 p = abs(fract(c.xxx + vec3(0., 1./3., 2./3.)) * 6. - 3.);
-  return c.z * mix(vec3(1.), clamp(p - 1., 0., 1.), c.y);
-}
-
-// Saturation boost
-vec3 sat(vec3 c, float s) {
-  vec3 hsv = rgb2hsv(c);
-  hsv.y *= s;
-  return hsv2rgb(hsv);
-}
-
-// Palette blending with trait weights
-vec3 paletteBlend(float t, vec3 cols[5], float w[5]) {
-  // Spatial distribution biased by field value
-  float k0 = w[0] * smoothstep(0.0, 1.0, 1.0 - t);
-  float k1 = w[1] * smoothstep(0.0, 1.0, abs(0.5 - t) * 2.0);
-  float k2 = w[2] * smoothstep(0.0, 1.0, t);
-  float k3 = w[3] * smoothstep(0.0, 1.0, 1.0 - abs(0.5 - t) * 2.0);
-  float k4 = w[4] * smoothstep(0.2, 0.8, t);
-  
-  float sum = k0 + k1 + k2 + k3 + k4 + 1e-5;
-  k0 /= sum; k1 /= sum; k2 /= sum; k3 /= sum; k4 /= sum;
-  
-  return cols[0] * k0 + cols[1] * k1 + cols[2] * k2 + cols[3] * k3 + cols[4] * k4;
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
 void main() {
-  // Map to NDC centered coordinates
   vec2 uv = vUv - 0.5;
   float r = length(uv);
   
-  // Circle mask with soft feather
   if (r > uRadius) {
     discard;
   }
   
-  // Domain-warped coordinates for organic flow
-  vec2 p = uv * 2.2;
-  float n1 = fbm(p + 0.10 * uTime);
-  float n2 = fbm(p * 1.7 + vec2(2.0, -1.3) + 0.07 * uTime);
-  vec2 warp = vec2(n1 - 0.5, n2 - 0.5);
-  vec2 q = p + warp * 1.2;
+  // Create organic flowing noise field
+  vec2 p = uv * 3.0;
+  float n1 = fbm(p + uTime * 0.1);
+  float n2 = fbm(p * 1.3 + vec2(2.0, -1.0) + uTime * 0.07);
+  vec2 warp = vec2(n1, n2) - 0.5;
+  vec2 q = p + warp * 1.5;
   
-  // Combine Worley for cellular structure
-  float cells = worley(q * 1.2);
-  float field = fbm(q) * 0.7 + (1.0 - cells) * 0.6;
+  // Combined noise field for color blending
+  float field = fbm(q) * 0.8 + fbm(q * 2.1) * 0.2;
   field = clamp(field, 0.0, 1.0);
   
-  // Get trait colors and blend them
+  // Reference nebula colors (matching your image)
+  vec3 colors[5];
+  colors[0] = vec3(0.95, 0.35, 0.15);  // Deep red-orange
+  colors[1] = vec3(0.15, 0.85, 0.95);  // Bright cyan-teal
+  colors[2] = vec3(0.65, 0.25, 0.85);  // Deep purple-magenta
+  colors[3] = vec3(0.45, 0.35, 0.95);  // Blue-violet
+  colors[4] = vec3(0.25, 0.65, 0.75);  // Darker teal-blue
+  
+  // Blend colors based on noise field
   vec3 color;
-  vec3 testColor = uTraitColors[0];
-  if (length(testColor) > 0.1) {
-    // Use actual trait colors
-    vec3 cols[5];
-    for (int i = 0; i < 5; i++) cols[i] = uTraitColors[i];
-    color = paletteBlend(field, cols, uTraitWeights);
+  if (field < 0.2) {
+    color = mix(colors[0], colors[1], field * 5.0);
+  } else if (field < 0.4) {
+    color = mix(colors[1], colors[2], (field - 0.2) * 5.0);
+  } else if (field < 0.6) {
+    color = mix(colors[2], colors[3], (field - 0.4) * 5.0);
+  } else if (field < 0.8) {
+    color = mix(colors[3], colors[4], (field - 0.6) * 5.0);
   } else {
-    // Fallback nebula colors
-    vec3 cols[5];
-    cols[0] = vec3(1.0, 0.3, 0.2);  // Red-orange
-    cols[1] = vec3(0.2, 0.8, 1.0);  // Cyan
-    cols[2] = vec3(0.8, 0.2, 1.0);  // Magenta  
-    cols[3] = vec3(0.2, 1.0, 0.4);  // Green
-    cols[4] = vec3(1.0, 0.8, 0.2);  // Yellow
-    float weights[5];
-    weights[0] = 0.2; weights[1] = 0.2; weights[2] = 0.2; weights[3] = 0.2; weights[4] = 0.2;
-    color = paletteBlend(field, cols, weights);
+    color = mix(colors[4], colors[0], (field - 0.8) * 5.0);
   }
   
-  // Boost saturation like the reference
-  color = sat(color, 1.12);
+  // Boost saturation for richer colors
+  float saturation = 1.3;
+  float gray = dot(color, vec3(0.299, 0.587, 0.114));
+  color = mix(vec3(gray), color, saturation);
   
-  // Volumetric vignette
-  float vign = smoothstep(uRadius * 0.95, uRadius * 0.65, r);
-  color *= mix(1.08, 0.82, vign);
+  // Darken overall for rich tones
+  color *= 0.8;
   
-  // Dense stipple grain texture
-  vec2 fragPx = gl_FragCoord.xy;
-  float grain1 = fract(sin(dot(fragPx, vec2(12.9898, 78.233))) * 43758.5453);
-  float grain2 = noise(q * 9.0 + 13.7);
-  float speck = smoothstep(0.55, 0.95, grain2 + grain1 * 0.35);
+  // Vignette effect for depth
+  float vignette = smoothstep(uRadius * 0.9, uRadius * 0.6, r);
+  color *= mix(1.2, 0.7, vignette);
   
-  // Apply stipple effect for pointillism
-  color = mix(color * 0.88, color * 1.06, speck);
+  // Add grain texture
+  vec2 fragCoord = gl_FragCoord.xy;
+  float grain1 = fract(sin(dot(fragCoord, vec2(12.9898, 78.233))) * 43758.5453);
+  float grain2 = noise(q * 8.0 + 13.7);
+  float speckle = smoothstep(0.4, 0.9, grain2 + grain1 * 0.4);
   
-  // Global grain wobble
-  float globalGrain = (hash(fragPx + uTime * 60.0) - 0.5) * 2.0;
-  color += globalGrain * 0.015;
+  // Apply grain for stipple effect
+  color = mix(color * 0.85, color * 1.15, speckle);
   
-  // Clamp whites to maintain richness (no pure white)
-  float maxC = max(max(color.r, color.g), color.b);
-  if (maxC > 0.94) {
-    color *= 0.94 / maxC;
+  // Prevent pure whites
+  float maxChannel = max(max(color.r, color.g), color.b);
+  if (maxChannel > 0.9) {
+    color *= 0.9 / maxChannel;
   }
   
-  // Soft edge
-  float alpha = smoothstep(uRadius, uRadius * 0.98, r);
-  
-  gl_FragColor = vec4(color, alpha);
+  gl_FragColor = vec4(color, 1.0);
 }
 `
+
+// Ensure perfect circular canvas sizing
+const resizeCanvas = () => {
+  if (!canvasRef.value || !renderer) return
+  
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+  const { width, height } = canvasRef.value.getBoundingClientRect()
+  const size = Math.min(width, height)
+  
+  // Set canvas size to perfect square
+  canvasRef.value.width = size * dpr
+  canvasRef.value.height = size * dpr
+  
+  // Update renderer size
+  renderer.setSize(size, size)
+  renderer.setPixelRatio(dpr)
+  
+  // Update viewport
+  if (renderer.getContext) {
+    const gl = renderer.getContext()
+    gl.viewport(0, 0, canvasRef.value.width, canvasRef.value.height)
+  }
+  
+  // Update uniforms
+  if (uniforms && uniforms.uResolution) {
+    uniforms.uResolution.value.set(size, size)
+  }
+}
 
 // Initialize Three.js scene
 const initThreeJS = () => {
@@ -401,8 +376,12 @@ const initThreeJS = () => {
     antialias: false,
     preserveDrawingBuffer: true
   })
-  renderer.setSize(canvasSize.value, canvasSize.value)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  
+  // Set color space explicitly
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+  
+  // Perfect circle sizing
+  resizeCanvas()
   renderer.setClearColor(0x000000, 0) // Transparent background
   
   console.log('Renderer created:', renderer)
@@ -518,9 +497,22 @@ const updateUniforms = () => {
   console.log('Material updated:', material ? 'Yes' : 'No')
 }
 
+// Animation state
+let isVisible = true
+let reducedMotion = false
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 // Animation loop
 const animate = () => {
-  if (!props.animate) return
+  if (!props.animate || reducedMotion || !isVisible) {
+    // Render single static frame for reduced motion or when not visible
+    render()
+    return
+  }
   
   const currentTime = Date.now()
   uniforms.uTime.value = (currentTime - startTime) * 0.001
@@ -704,21 +696,56 @@ const testBasicShader = () => {
   }
 }
 
+// Setup intersection observer for performance
+let observer = null
+
+const setupIntersectionObserver = () => {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      isVisible = entry.isIntersecting
+      if (!isVisible && animationId) {
+        cancelAnimationFrame(animationId)
+        animationId = null
+      } else if (isVisible && props.animate && !animationId && !reducedMotion) {
+        animate()
+      }
+    })
+  })
+  
+  if (canvasRef.value) {
+    observer.observe(canvasRef.value)
+  }
+}
+
 // Lifecycle
 onMounted(() => {
+  checkReducedMotion()
+  
+  // Listen for reduced motion changes
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  mediaQuery.addEventListener('change', checkReducedMotion)
+  
   // Small delay to ensure DOM is ready
   setTimeout(() => {
     initThreeJS()
+    setupIntersectionObserver()
   }, 100)
+  
+  // Add resize listener for perfect circle maintenance
+  window.addEventListener('resize', resizeCanvas, { passive: true })
 })
 
 onBeforeUnmount(() => {
   if (animationId) {
     cancelAnimationFrame(animationId)
   }
+  if (observer) {
+    observer.disconnect()
+  }
   if (renderer) {
     renderer.dispose()
   }
+  window.removeEventListener('resize', resizeCanvas)
 })
 
 watch(() => props.traits, updateUniforms, { deep: true })
@@ -748,11 +775,10 @@ watch(() => props.animate, (newVal) => {
 }
 
 .nebula-canvas {
+  display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   cursor: crosshair;
-  border-radius: 50%;
-  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
 }
 
 .trait-legend {

@@ -1,5 +1,5 @@
 <template>
-  <section class="hero section-large">
+  <section class="hero section">
     <div class="container">
       <div class="hero__content">
         <div class="hero__text">
@@ -7,26 +7,28 @@
             Real‑Time Global People Intelligence for Sales
           </h1>
           <p class="hero__subtitle">
-            Zeal enriches prospects from worldwide sources and builds a living personality palette so you can write messages they'll actually respond to.
+            Enrich prospects from worldwide sources and tailor outreach with a living personality palette.
           </p>
           
           <div class="hero__actions">
             <a href="#demo" class="btn btn-primary">Start Free Trial</a>
-            <a href="#demo" class="btn btn-secondary">Book Demo</a>
+            <a href="#demo" class="btn btn-ghost">Book Demo</a>
           </div>
           
           <p class="hero__trust">
-            Integrates with Salesforce, HubSpot, Apollo, Clay.
+            Works with: <span class="trust-brands">Salesforce, HubSpot, Apollo, Clay, + more</span>
           </p>
         </div>
         
-            <div class="hero__visual">
-      <PersonalityPaletteNebula 
-        :traits="processedTraits" 
-        :size="520"
-        :animate="true"
-      />
-    </div>
+        <div class="hero__visual">
+          <div class="palette-wrap">
+            <PersonalityPaletteNebula 
+              :traits="processedTraits" 
+              :size="520"
+              :animate="true"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -79,75 +81,158 @@ const processedTraits = computed(() => {
 <style scoped>
 .hero {
   margin-top: 80px;
-  min-height: 80vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
+  background: var(--bg);
 }
 
 .hero__content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  gap: var(--space-4xl);
   align-items: center;
 }
 
+.hero__text {
+  max-width: 600px;
+}
+
 .hero__title {
-  font-size: 3.5rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.1;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, var(--text), var(--accent));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-xl);
+  color: var(--text);
 }
 
 .hero__subtitle {
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   color: var(--muted);
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-xl);
   line-height: 1.6;
+  max-width: 55ch;
 }
 
 .hero__actions {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
 }
 
 .hero__trust {
-  font-size: 0.875rem;
+  font-size: var(--text-xs);
   color: var(--muted);
-  font-style: italic;
+}
+
+.trust-brands {
+  color: var(--text);
+  font-weight: 500;
 }
 
 .hero__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-3xl);
+}
+
+.palette-wrap {
   position: relative;
+  width: min(46vw, 620px);
+  aspect-ratio: 1 / 1;            /* ensures perfect square */
+  border-radius: 50%;
+  overflow: hidden;                /* hard circular clip */
+  background: var(--bg);
+  z-index: 0;
+}
+
+.palette-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%, 
+    transparent 64%, 
+    rgba(0, 0, 0, 0.18) 100%
+  );
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .hero__content {
+    gap: var(--space-3xl);
+  }
+  
+  .hero__title {
+    font-size: 2.75rem;
+  }
 }
 
 @media (max-width: 768px) {
   .hero {
     margin-top: 60px;
-    min-height: auto;
+    min-height: 90vh;
+    padding: var(--space-xl) 0;
   }
   
   .hero__content {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: var(--space-3xl);
     text-align: center;
   }
   
+  .hero__text {
+    max-width: none;
+    order: 1;
+  }
+  
+  .hero__visual {
+    order: 0;
+    padding: var(--space-xl);
+  }
+  
   .hero__title {
-    font-size: 2.5rem;
+    font-size: var(--text-2xl);
   }
   
   .hero__subtitle {
-    font-size: 1.125rem;
+    font-size: var(--text-base);
+    max-width: none;
   }
   
   .hero__actions {
     justify-content: center;
-    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+  
+  .palette-wrap {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 80vh;
+  }
+  
+  .hero__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .hero__visual {
+    padding: var(--space-lg);
+  }
+  
+  .palette-wrap {
+    max-width: 320px;
   }
 }
 </style>

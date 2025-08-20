@@ -192,10 +192,10 @@ const getPeriod = () => {
   display: flex;
   justify-content: center;
   margin-bottom: 3rem;
-  background: var(--panel);
+  background: transparent;
   border-radius: var(--border-radius);
   padding: 0.5rem;
-  border: 1px solid rgba(166, 176, 187, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
@@ -236,9 +236,9 @@ const getPeriod = () => {
 }
 
 .pricing-card {
-  background: var(--panel);
+  background: transparent;
   border-radius: var(--border-radius-lg);
-  border: 1px solid rgba(166, 176, 187, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   padding: 2rem;
   position: relative;
   transition: var(--transition);

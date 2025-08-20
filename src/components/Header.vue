@@ -20,7 +20,7 @@
         </div>
         
         <div class="nav__actions">
-          <a href="#trial" class="btn btn-secondary">Start Free Trial</a>
+          <a href="#trial" class="btn btn-ghost">Start Free Trial</a>
           <a href="#demo" class="btn btn-primary">Book Demo</a>
         </div>
         
@@ -69,33 +69,31 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
-  background: rgba(11, 13, 16, 0.8);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid transparent;
-  transition: var(--transition);
+  z-index: var(--z-header);
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid var(--line);
+  transition: all var(--dur-1) var(--e-out);
 }
 
 .header--scrolled {
-  background: rgba(11, 13, 16, 0.95);
-  border-bottom-color: rgba(166, 176, 187, 0.1);
-  box-shadow: var(--shadow);
+  background: rgba(0, 0, 0, 0.9);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
+  padding: var(--space-md) 0;
   position: relative;
 }
 
 .nav__logo {
   text-decoration: none;
-  color: var(--text);
-  font-size: 1.5rem;
+  font-size: var(--text-lg);
   font-weight: 700;
-  transition: var(--transition);
+  color: var(--text);
+  transition: color var(--dur-1) var(--e-out);
 }
 
 .nav__logo:hover {
@@ -103,10 +101,7 @@ onUnmounted(() => {
 }
 
 .nav__logo-text {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: var(--text-xl);
 }
 
 .nav__menu {
@@ -117,7 +112,7 @@ onUnmounted(() => {
 .nav__links {
   display: flex;
   list-style: none;
-  gap: 2rem;
+  gap: var(--space-xl);
   margin: 0;
   padding: 0;
 }
@@ -126,8 +121,9 @@ onUnmounted(() => {
   color: var(--muted);
   text-decoration: none;
   font-weight: 500;
-  transition: var(--transition);
+  font-size: var(--text-sm);
   position: relative;
+  transition: color var(--dur-1) var(--e-out);
 }
 
 .nav__link:hover,
@@ -135,26 +131,27 @@ onUnmounted(() => {
   color: var(--text);
 }
 
+/* Navigation underline using global nav system */
 .nav__link::after {
-  content: '';
+  content: "";
   position: absolute;
-  bottom: -4px;
   left: 0;
-  width: 0;
+  right: 100%;
+  bottom: -6px;
   height: 2px;
   background: var(--accent);
-  transition: var(--transition);
+  transition: right var(--dur-1) var(--e-out);
 }
 
 .nav__link:hover::after,
-.nav__link:focus::after {
-  width: 100%;
+.nav__link:focus-visible::after {
+  right: 0;
 }
 
 .nav__actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .nav__toggle {
@@ -169,11 +166,18 @@ onUnmounted(() => {
   padding: 0;
 }
 
+.nav__toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: var(--r-xs);
+}
+
 .nav__toggle-line {
   width: 100%;
   height: 2px;
   background: var(--text);
-  transition: var(--transition);
+  transition: all var(--dur-1) var(--e-out);
+  border-radius: 1px;
 }
 
 @media (max-width: 768px) {
@@ -182,15 +186,15 @@ onUnmounted(() => {
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--panel);
-    border: 1px solid rgba(166, 176, 187, 0.1);
-    border-radius: var(--border-radius);
-    margin-top: 1rem;
-    padding: 1rem;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-md);
+    margin-top: var(--space-md);
+    padding: var(--space-lg);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    transition: var(--transition);
+    transition: all var(--dur-2) var(--e-out);
   }
   
   .nav__menu--open {
@@ -201,11 +205,20 @@ onUnmounted(() => {
   
   .nav__links {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-md);
+    width: 100%;
+  }
+  
+  .nav__link {
+    width: 100%;
+    text-align: center;
+    padding: var(--space-md);
   }
   
   .nav__actions {
-    display: none;
+    margin-top: var(--space-lg);
+    justify-content: center;
+    gap: var(--space-sm);
   }
   
   .nav__toggle {
@@ -222,6 +235,18 @@ onUnmounted(() => {
   
   .nav__toggle[aria-expanded="true"] .nav__toggle-line:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
+  }
+}
+
+@media (max-width: 480px) {
+  .nav__actions {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

@@ -105,7 +105,7 @@
 
 <style scoped>
 .footer {
-  background: var(--panel);
+  background: transparent;
   border-top: 1px solid rgba(166, 176, 187, 0.1);
   padding: 4rem 0 2rem;
 }
